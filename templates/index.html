@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Xitsonga ASR</title>
+ <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</head>
+<body>
+  <div class="home-page">
+    <!-- Header -->
+    <header class="header">
+      <div class="logo">Xitsonga ASR</div>
+      <nav class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#demo">Demo</a>
+        <a href="#contact">Contact</a>
+        <a href="/login" class="btn-primary">Get Started</a>
+      </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="hero-text">
+        <h1>Next-Gen Automatic Speech Recognition</h1>
+        <p>Experience accurate, fast, and scalable ASR powered by state-of-the-art Transformer models.</p>
+        <a href="/login" class="btn-primary btn-large">Try it Now</a>
+      </div>
+      <div class="hero-image">
+        <img src="{{ url_for('static', filename='asr.avif') }}" alt="ASR Illustration" />
+      </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features">
+      <h2>Why Choose Us?</h2>
+      <div class="feature-cards">
+        <div class="card">
+          <i class="fas fa-bolt"></i>
+          <h3>Real-Time Transcription</h3>
+          <p>Transcribe speech instantly with minimal latency.</p>
+        </div>
+        <div class="card">
+          <i class="fas fa-brain"></i>
+          <h3>Transformer-Based Accuracy</h3>
+          <p>Leverages cutting-edge transformer architecture for precision.</p>
+        </div>
+        <div class="card">
+          <i class="fas fa-tachometer-alt"></i>
+          <h3>Low Latency</h3>
+          <p>Experience lightning-fast transcription with minimal delay.</p>
+        </div>
+        <div class="card">
+          <i class="fas fa-shield-alt"></i>
+          <h3>Data Privacy</h3>
+          <p>End-to-end encryption to keep your data secure.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Demo Section -->
+    <section id="demo" class="demo">
+      <h2>Try Our Demo</h2>
+      <p>Upload your audio file and watch it transcribe in seconds.</p>
+      <button class="btn-primary">Transcribe</button>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact">
+      <h2>Contact Us</h2>
+      <p>Have questions or need support? We'd love to hear from you.</p>
+      <form class="contact-form">
+        <input type="text" placeholder="Your Name" required />
+        <input type="email" placeholder="Your Email" required />
+        <textarea placeholder="Your Message" rows="4" required></textarea>
+        <button class="btn-primary" type="submit">Send Message</button>
+      </form>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <p>© 2025 Group 13. All rights reserved.</p>
+      <p>Email: <a href="mailto:support@ai.dev">support@ai.dev</a></p>
+    </footer>
+  </div>
+</body>
+</html>

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Settings | ASR Dashboard</title>
+  <link rel="stylesheet" href="/static/dashboard.css" />
+  <link rel="stylesheet" href="/static/settings.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+<body>
+  <div class="dashboard-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="logo">Menu</div>
+      <nav class="nav">
+        <a href="/dashboard" class="nav-item {% if current_page == 'home' %}active{% endif %}">
+          <i class="fas fa-home icon"></i><span>Home</span>
+        </a>
+        <a href="/transcribe" class="nav-item {% if current_page == 'transcribe' %}active{% endif %}">
+          <i class="fas fa-microphone icon"></i><span>Transcribe</span>
+        </a>
+        <a href="/myfiles" class="nav-item {% if current_page == 'myfiles' %}active{% endif %}">
+          <i class="fas fa-file-alt icon"></i><span>My Files</span>
+        </a>
+        <a href="/settings" class="nav-item {% if current_page == 'settings' %}active{% endif %}">
+          <i class="fas fa-cog icon"></i><span>Settings</span>
+        </a>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="dashboard-main">
+      <header class="dashboard-navbar">
+        <h2>Settings</h2>
+        <div class="user-info">
+          <img src="{{ user.picture }}" alt="Profile Picture" class="profile-pic" />
+          <p>{{ user.email }}</p>
+        </div>
+      </header>
+
+      <section class="dashboard-content settings-grid">
+
+        <!-- Profile Settings -->
+        <form class="settings-card" method="POST">
+          <h3><i class="fas fa-user"></i> Profile</h3>
+          <div class="form-group"><label>Name</label><input type="text" name="name" value="{{ user.name }}"></div>
+          <div class="form-group"><label>Email</label><input type="email" name="email" value="{{ user.email }}"></div>
+          <div class="form-group"><label>Profile Picture URL</label><input type="url" name="picture" value="{{ user.picture }}"></div>
+          <button type="submit">Save Profile</button>
+        </form>
+
+        <!-- Password Settings -->
+        <form class="settings-card" method="POST">
+          <h3><i class="fas fa-key"></i> Change Password</h3>
+          <div class="form-group"><label>Current Password</label><input type="password" name="current_password" /></div>
+          <div class="form-group"><label>New Password</label><input type="password" name="new_password" /></div>
+          <div class="form-group"><label>Confirm New Password</label><input type="password" name="confirm_password" /></div>
+          <button type="submit">Update Password</button>
+        </form>
+
+        <!-- Transcription Preferences -->
+        <form class="settings-card" method="POST">
+          <h3><i class="fas fa-language"></i> Transcription Preferences</h3>
+          <div class="form-group">
+            <label>Language</label>
+            <select name="language">
+              <option value="en">English</option>
+              <option value="fr">French</option>
+              <option value="es">Spanish</option>
+              <option value="de">German</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Audio Format</label>
+            <select name="audio_format">
+              <option value="mp3">MP3</option>
+              <option value="wav">WAV</option>
+              <option value="ogg">OGG</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label><input type="checkbox" name="diarization" checked /> Speaker Diarization</label>
+          </div>
+          <button type="submit">Save Preferences</button>
+        </form>
+
+        <!-- Theme Settings -->
+        <form class="settings-card" method="POST">
+          <h3><i class="fas fa-paint-brush"></i> Theme</h3>
+          <div class="form-group">
+            <label>Choose Theme</label>
+            <select name="theme">
+              <option value="light" selected>Light</option>
+              <option value="dark">Dark</option>
+              <option value="auto">Auto</option>
+            </select>
+          </div>
+          <button type="submit">Update Theme</button>
+        </form>
+
+        <!-- Security Settings -->
+        <form class="settings-card" method="POST">
+          <h3><i class="fas fa-shield-alt"></i> Security Settings</h3>
+          <div class="form-group">
+            <label><input type="checkbox" name="2fa" /> Enable Two-Factor Authentication (2FA)</label>
+          </div>
+          <div class="form-group">
+            <label><input type="checkbox" name="login_alerts" checked /> Email me on new device login</label>
+          </div>
+          <div class="form-group">
+            <label>Last Login</label>
+            <input type="text" value="{{ last_login }}" disabled />
+          </div>
+          <button type="submit">Save Security Settings</button>
+        </form>
+
+      </section>
+    </main>
+  </div>
+</body>
+</html>

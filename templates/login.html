@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <form id="loginForm">
+            <h2>Login</h2>
+
+            <div class="form-group">
+                <input type="email" name="email" placeholder="Email" required />
+            </div>
+
+            <div class="form-group">
+                <input type="password" name="password" placeholder="Password" required id="password" />
+                <span class="toggle-password" onclick="togglePassword()">Show</span>
+            </div>
+
+            <button type="submit">Login</button>
+            <div class="spinner" id="spinner"></div>
+            <p id="message"></p>
+
+         <div class="social-btns">
+            <button type="button" onclick="window.location.href='/login/google'">
+                <img src="https://img.icons8.com/color/20/google-logo.png"/> Login with Google
+            </button>
+            <button type="button" onclick="window.location.href='/login/facebook'">
+                <img src="https://img.icons8.com/fluency/20/facebook-new.png"/> Login with Facebook
+            </button>
+            </div>
+
+
+            <a href="/register">Don't have an account? Register</a>
+        </form>
+        <div class="toggle-mode" onclick="toggleDarkMode()">Toggle Dark Mode</div>
+    </div>
+
+    <script>
+        const form = document.getElementById('loginForm');
+        const message = document.getElementById('message');
+        const spinner = document.getElementById('spinner');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            message.textContent = "";
+            spinner.style.display = "block";
+
+            const data = {
+                email: form.email.value,
+                password: form.password.value
+            };
+
+            try {
+                const res = await fetch('/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await res.json();
+                spinner.style.display = "none";
+                message.textContent = result.message || result.error;
+                message.style.color = res.ok ? 'green' : 'red';
+
+                if (res.ok) {
+                    setTimeout(() => {
+                        window.location.href = "/dashboard";
+                    }, 1000);
+                }
+            } catch (err) {
+                spinner.style.display = "none";
+                message.textContent = "Network error.";
+                message.style.color = 'red';
+            }
+        });
+
+        function togglePassword() {
+            const pwd = document.getElementById('password');
+            const toggle = document.querySelector('.toggle-password');
+            if (pwd.type === 'password') {
+                pwd.type = 'text';
+                toggle.textContent = 'Hide';
+            } else {
+                pwd.type = 'password';
+                toggle.textContent = 'Show';
+            }
+        }
+
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark');
+            localStorage.setItem('mode', document.body.classList.contains('dark') ? 'dark' : 'light');
+        }
+
+        // Load dark mode on page load if enabled
+        window.addEventListener('DOMContentLoaded', () => {
+            if (localStorage.getItem('mode') === 'dark') {
+                document.body.classList.add('dark');
+            }
+        });
+    </script>
+</body>
+</html>

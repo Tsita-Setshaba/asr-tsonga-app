@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <form id="registerForm">
+            <h2>Create Account</h2>
+
+            <div class="form-group">
+                <input type="text" name="name" placeholder="First Name" required />
+            </div>
+
+            <div class="form-group">
+                <input type="text" name="surname" placeholder="Last Name" required />
+            </div>
+
+            <div class="form-group">
+                <input type="email" name="email" placeholder="Email" required />
+            </div>
+
+            <div class="form-group">
+                <input type="password" name="password" id="password" placeholder="Password" required />
+                <span class="toggle-password" onclick="togglePassword('password')">Show</span>
+            </div>
+
+            <div class="form-group">
+                <input type="password" name="confirmPassword" id="confirmPassword" placeholder="Confirm Password" required />
+                <span class="toggle-password" onclick="togglePassword('confirmPassword')">Show</span>
+            </div>
+
+            <button type="submit">Register</button>
+            <div class="spinner" id="spinner"></div>
+            <p id="message"></p>
+
+            <a href="/login">Already have an account? Login</a>
+        </form>
+        <div class="toggle-mode" onclick="toggleDarkMode()">Toggle Dark Mode</div>
+    </div>
+
+    <script>
+        const form = document.getElementById('registerForm');
+        const message = document.getElementById('message');
+        const spinner = document.getElementById('spinner');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            message.textContent = "";
+            spinner.style.display = "block";
+
+            const password = form.password.value;
+            const confirmPassword = form.confirmPassword.value;
+
+            if (password !== confirmPassword) {
+                spinner.style.display = "none";
+                message.textContent = "Passwords do not match.";
+                message.style.color = 'red';
+                return;
+            }
+
+            const data = {
+                name: form.name.value,
+                surname: form.surname.value,
+                email: form.email.value,
+                password: password
+            };
+
+            try {
+                const res = await fetch('/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await res.json();
+                spinner.style.display = "none";
+                message.textContent = result.message || result.error;
+                message.style.color = res.ok ? 'green' : 'red';
+
+                if (res.ok) {
+                    setTimeout(() => {
+                        window.location.href = "/login";
+                    }, 1200);
+                }
+            } catch {
+                spinner.style.display = "none";
+                message.textContent = "Error during registration.";
+                message.style.color = 'red';
+            }
+        });
+
+        function togglePassword(id) {
+            const input = document.getElementById(id);
+            const toggle = input.nextElementSibling;
+            if (input.type === 'password') {
+                input.type = 'text';
+                toggle.textContent = 'Hide';
+            } else {
+                input.type = 'password';
+                toggle.textContent = 'Show';
+            }
+        }
+
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark');
+            localStorage.setItem('mode', document.body.classList.contains('dark') ? 'dark' : 'light');
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            if (localStorage.getItem('mode') === 'dark') {
+                document.body.classList.add('dark');
+            }
+        });
+    </script>
+</body>
+</html>

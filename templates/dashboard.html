@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}" />
+  <script src="https://kit.fontawesome.com/yourkitid.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+<body>
+  <button class="sidebar-toggle" aria-label="Toggle Sidebar" onclick="toggleSidebar()">
+    <i class="fas fa-bars"></i>
+  </button>
+
+  <div class="dashboard-layout">
+<aside class="sidebar">
+      <div class="logo">Menu</div>
+      <nav class="nav">
+        <a href="/dashboard" class="nav-item {% if current_page == 'home' %}active{% endif %}">
+          <i class="fas fa-home icon"></i><span>Home</span>
+        </a>
+        <a href="/transcribe" class="nav-item {% if current_page == 'transcribe' %}active{% endif %}">
+          <i class="fas fa-microphone icon"></i><span>Transcribe</span>
+        </a>
+        <a href="/myfiles" class="nav-item {% if current_page == 'myfiles' %}active{% endif %}">
+          <i class="fas fa-file-alt icon"></i><span>My Files</span>
+        </a>
+        <a href="/settings" class="nav-item {% if current_page == 'settings' %}active{% endif %}">
+          <i class="fas fa-cog icon"></i><span>Settings</span>
+        </a>
+      </nav>
+    </aside>
+
+    <div class="dashboard-main">
+      <header class="dashboard-navbar">
+        <h2>Welcome Back, {{ user.name }}!</h2>
+        <div class="user-info">
+          <img src="{{ user.picture }}" alt="Profile Picture" class="profile-pic" />
+          <p>{{ user.email }}</p>
+        </div>
+      </header>
+
+      <section class="dashboard-content">
+        <div class="card-grid">
+          <div class="card">
+            <h3>Total Uploads</h3>
+            <p>23</p>
+          </div>
+          <div class="card">
+            <h3>Last Transcription</h3>
+            <p>“Xitsonga sample 3.mp3”</p>
+          </div>
+          <div class="card">
+            <h3>Avg. Processing Time</h3>
+            <p>4.2 seconds</p>
+          </div>
+          <div class="card">
+            <h3>Accuracy</h3>
+            <p>98.6%</p>
+          </div>
+        </div>
+
+        <div class="recent-activity">
+          <h3>Recent Activity</h3>
+          <ul>
+            <li>Uploaded "xits_sample1.wav"</li>
+            <li>Transcribed "voc_clip2.mp3"</li>
+            <li>Viewed results of "interview4.aac"</li>
+          </ul>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      sidebar.classList.toggle('open');
+    }
+
+    window.addEventListener('resize', () => {
+      if (window.innerWidth > 768) {
+        document.getElementById('sidebar').classList.remove('open');
+      }
+    });
+  </script>
+</body>
+</html>

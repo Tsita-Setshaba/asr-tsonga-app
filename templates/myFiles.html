@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>My Files</title>
+  <link rel="stylesheet" href="/static/dashboard.css" />
+  <link rel="stylesheet" href="/static/myfiles.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+</head>
+<body>
+  <div class="dashboard-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="logo">Menu</div>
+      <nav class="nav">
+        <a href="/dashboard" class="nav-item"><i class="fas fa-home icon"></i> <span>Home</span></a>
+        <a href="/transcribe" class="nav-item"><i class="fas fa-microphone icon"></i> <span>Transcribe</span></a>
+        <a href="/myfiles" class="nav-item active"><i class="fas fa-file-alt icon"></i> <span>My Files</span></a>
+        <a href="/settings" class="nav-item"><i class="fas fa-cog icon"></i> <span>Settings</span></a>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="dashboard-main">
+      <header class="dashboard-navbar">
+        <h2>My Transcription Files</h2>
+        <div class="user-info">
+          <img src="{{ user.picture }}" alt="Profile Picture" class="profile-pic" />
+          <p>{{ user.email }}</p>
+        </div>
+      </header>
+
+     
+
+        <div class="file-grid">
+          {% for file in files %}
+          <div class="file-card">
+            <div class="file-icon">
+              <i class="fas fa-file-alt"></i>
+            </div>
+            <div class="file-info">
+              <h4>{{ file.name }}</h4>
+              <p class="file-meta">Size: {{ file.size }} • {{ file.created_at }}</p>
+              <div class="file-actions">
+                <a href="{{ file.view_url }}" class="btn view" target="_blank"><i class="fas fa-eye"></i> View</a>
+                <a href="{{ file.download_url }}" class="btn download"><i class="fas fa-download"></i> Download</a>
+                <form method="post" action="{{ file.delete_url }}" class="delete-form">
+                  <button type="submit" class="btn delete" onclick="return confirm('Are you sure?');">
+                    <i class="fas fa-trash-alt"></i> Delete
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+          {% else %}
+          <p class="no-files">No transcription files found. Try uploading one!</p>
+          {% endfor %}
+        </div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

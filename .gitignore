@@ -1,0 +1,10 @@
+.env
+__pycache__/
+*.pyc
+.idea/
+Backend/
+Backend(v1.0)/
+*.venv/
+venv/
+*.wav
+*.log

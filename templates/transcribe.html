@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Transcribe</title>
+  <link rel="stylesheet" href="/static/dashboard.css" />
+  <link rel="stylesheet" href="/static/transcribe.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+</head>
+<body>
+  <div class="dashboard-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="logo">Menu</div>
+      <nav class="nav">
+        <a href="/dashboard" class="nav-item"><i class="fas fa-home icon"></i> <span>Home</span></a>
+        <a href="/transcribe" class="nav-item active"><i class="fas fa-microphone icon"></i> <span>Transcribe</span></a>
+        <a href="/myfiles" class="nav-item"><i class="fas fa-file-alt icon"></i> <span>My Files</span></a>
+        <a href="/settings" class="nav-item"><i class="fas fa-cog icon"></i> <span>Settings</span></a>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="dashboard-main">
+      <header class="dashboard-navbar">
+        <h2>Transcribe Audio</h2>
+        <div class="user-info">
+          <img src="{{ user.picture }}" alt="Profile Picture" class="profile-pic" />
+          <p>{{ user.email }}</p>
+        </div>
+      </header>
+
+      <section class="dashboard-content">
+        <div class="transcribe-container">
+          <!-- Upload Section -->
+          <div class="transcribe-box">
+            <h3>Upload Audio File</h3>
+            <form id="uploadForm" class="transcribe-form">
+              <input type="file" name="audio_file" id="audioFileInput" accept="audio/*" required />
+              <button type="submit" class="start-btn"><i class="fas fa-play"></i> Start Transcription</button>
+            </form>
+          </div>
+
+          <!-- OR separator -->
+          <div class="or-separator">OR</div>
+
+          <!-- Record Section -->
+          <div class="record-box">
+            <h3>Record Audio</h3>
+            <div class="record-controls">
+              <button id="startRecording" type="button"><i class="fas fa-circle"></i> Start Recording</button>
+              <button id="stopRecording" type="button" disabled><i class="fas fa-stop"></i> Stop Recording</button>
+
+              <!-- Recording bar container -->
+              <div id="recordingBar" class="recording-bar" hidden>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+              </div>
+
+              <audio id="recordedAudio" controls hidden></audio>
+
+              <button id="transcribeRecordingBtn" type="button" class="upload-btn" hidden>
+                <i class="fas fa-upload"></i> Transcribe
+              </button>
+              <span id="transcribingText" class="transcribing-text" hidden>Transcribing<span class="dots">...</span></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Result Section -->
+        <div id="resultBox" class="result-box" hidden>
+          <h3>Transcription Result</h3>
+          <p id="resultText"></p>
+        </div>
+
+        <!-- Error message -->
+        <div id="errorBox" class="error-box" hidden>
+          <p id="errorText"></p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const startBtn = document.getElementById("startRecording");
+    const stopBtn = document.getElementById("stopRecording");
+    const audioElement = document.getElementById("recordedAudio");
+    const recordingBar = document.getElementById("recordingBar");
+    const transcribingText = document.getElementById("transcribingText");
+    const transcribeRecordingBtn = document.getElementById("transcribeRecordingBtn");
+    const uploadForm = document.getElementById("uploadForm");
+    const audioFileInput = document.getElementById("audioFileInput");
+    const resultBox = document.getElementById("resultBox");
+    const resultText = document.getElementById("resultText");
+    const errorBox = document.getElementById("errorBox");
+    const errorText = document.getElementById("errorText");
+
+    let mediaRecorder;
+    let audioChunks = [];
+    let recordedBlob = null;
+
+    // Shared function: send an audio Blob/File to the backend and show the result
+    async function transcribeAudio(fileOrBlob, filename) {
+      hideMessages();
+      transcribingText.hidden = false;
+
+      const formData = new FormData();
+      formData.append("audio", fileOrBlob, filename);
+
+      try {
+        const response = await fetch("/transcribe/upload", {
+          method: "POST",
+          body: formData
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || "Transcription failed");
+        }
+
+        showResult(data.text);
+      } catch (err) {
+        showError(err.message);
+      } finally {
+        transcribingText.hidden = true;
+      }
+    }
+
+    function showResult(text) {
+      resultText.textContent = text;
+      resultBox.hidden = false;
+      errorBox.hidden = true;
+    }
+
+    function showError(message) {
+      errorText.textContent = message;
+      errorBox.hidden = false;
+      resultBox.hidden = true;
+    }
+
+    function hideMessages() {
+      resultBox.hidden = true;
+      errorBox.hidden = true;
+    }
+
+    // --- Upload form ---
+    uploadForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const file = audioFileInput.files[0];
+      if (!file) return;
+      transcribeAudio(file, file.name);
+    });
+
+    // --- Recording ---
+    startBtn.onclick = async () => {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        mediaRecorder = new MediaRecorder(stream);
+
+        mediaRecorder.start();
+        audioChunks = [];
+
+        mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+
+        mediaRecorder.onstop = () => {
+          recordedBlob = new Blob(audioChunks, { type: 'audio/webm' });
+          const audioURL = URL.createObjectURL(recordedBlob);
+          audioElement.src = audioURL;
+          audioElement.hidden = false;
+          transcribeRecordingBtn.hidden = false;
+
+          recordingBar.hidden = true;
+          startBtn.disabled = false;
+          stopBtn.disabled = true;
+        };
+
+        startBtn.disabled = true;
+        stopBtn.disabled = false;
+        recordingBar.hidden = false;
+        audioElement.hidden = true;
+        transcribeRecordingBtn.hidden = true;
+        transcribingText.hidden = true;
+        hideMessages();
+      } catch (err) {
+        showError("Error accessing microphone: " + err.message);
+      }
+    };
+
+    stopBtn.onclick = () => {
+      if (mediaRecorder && mediaRecorder.state === "recording") {
+        mediaRecorder.stop();
+      }
+    };
+
+    transcribeRecordingBtn.onclick = () => {
+      if (!recordedBlob) return;
+      transcribeRecordingBtn.hidden = true;
+      transcribeAudio(recordedBlob, "recording.webm");
+    };
+  </script>
+</body>
+</html>
