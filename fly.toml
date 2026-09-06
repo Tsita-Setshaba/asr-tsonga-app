@@ -1,10 +1,11 @@
-# fly.toml app configuration file generated for asr-tsonga-app on 2026-09-06T07:39:30Z
+# fly.toml app configuration file generated for asr-tsonga-app on 2026-09-06T07:41:11Z
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
 app = 'asr-tsonga-app'
 primary_region = 'jnb'
+swap_size_mb = 506
 
 [build]
 
